@@ -1,0 +1,165 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String    @id @default(cuid())
+  username  String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  sessions  Session[]
+  products  Product[]
+  contents  ContentDraft[]
+  videoJobs VideoJob[]
+  socialAccounts SocialAccount[]
+}
+
+model SocialAccount {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  platform String
+  accountName String
+  externalAccountId String
+  tokenCiphertext String
+  refreshTokenCiphertext String?
+  expiresAt DateTime?
+  status String @default("connected")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([userId, platform, externalAccountId])
+  @@index([userId, platform])
+}
+
+enum ProductPlatform {
+  SHOPEE
+  TIKTOK_SHOP
+  OTHER
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Product {
+  id           String          @id @default(cuid())
+  userId       String
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  platform     ProductPlatform
+  productUrl   String?
+  affiliateUrl String?
+  price        Decimal?        @db.Decimal(12, 2)
+  description  String?
+  features     String?
+  notes        String?
+  status       ProductStatus   @default(ACTIVE)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  assets       ProductAsset[]
+  contents     ContentDraft[]
+  videoJobs    VideoJob[]
+
+  @@index([userId, createdAt])
+}
+
+model ContentDraft {
+  id                     String   @id @default(cuid())
+  userId                 String
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId              String
+  product                Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  contentType            String
+  targetPlatform         String
+  language               String
+  tone                   String
+  targetAudience         String
+  additionalInstructions String
+  hook                   String
+  script                 String
+  caption                String
+  cta                    String
+  hashtags               String[]
+  aiProvider             String
+  aiModel                String
+  status                 String   @default("draft")
+  version                Int      @default(1)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  assets                 ProductAsset[]
+  videoJobs              VideoJob[]
+
+  @@index([userId, createdAt])
+  @@index([productId])
+}
+
+model ProductAsset {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  contentId String?
+  content   ContentDraft? @relation(fields: [contentId], references: [id], onDelete: SetNull)
+  type      String   @default("product_image")
+  filePath  String   @unique
+  fileName  String
+  mimeType  String
+  fileSize  Int
+  isPrimary Boolean  @default(false)
+  prompt    String?
+  aspectRatio String?
+  aiProvider String?
+  aiModel    String?
+  voice      String?
+  language   String?
+  speed      Decimal? @db.Decimal(4, 2)
+  createdAt DateTime @default(now())
+
+  @@index([productId, createdAt])
+  @@index([contentId])
+}
+
+model VideoJob {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId       String
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  contentId       String
+  content         ContentDraft @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  providerJobId   String?
+  provider        String
+  model           String
+  prompt          String
+  durationSeconds Int
+  aspectRatio     String
+  referenceAssetId String?
+  status          String   @default("pending")
+  progress        Int      @default(0)
+  estimatedCost   Decimal? @db.Decimal(12, 4)
+  errorMessage    String?
+  outputAssetId   String?  @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([contentId, createdAt])
+  @@index([status])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
