@@ -23,6 +23,9 @@ import { listAudioAssets } from "@/lib/audio/service";
 import { VideoComposer } from "@/components/content/video-composer";
 import { listComposerAssets, listComposedVideos } from "@/lib/composer/service";
 import { ContentPreview } from "@/components/content/content-preview";
+import { FacebookPublisher } from "@/components/content/facebook-publisher";
+import { listSocialAccounts } from "@/lib/social/service";
+import { listPublishJobs } from "@/lib/publishing/service";
 export default async function ContentDetail({
   params,
   searchParams,
@@ -121,6 +124,28 @@ export default async function ContentDetail({
             ({ id, fileName, type }) => ({ id, fileName, type }),
           ),
         ]}
+      />
+      <FacebookPublisher
+        contentId={content.id}
+        ready={content.status === "ready"}
+        accounts={(await listSocialAccounts(user.id))
+          .filter(
+            (account) =>
+              account.platform === "facebook" && account.status === "connected",
+          )
+          .map(({ id, accountName }) => ({ id, accountName }))}
+        initialCaption={[
+          content.caption,
+          content.hashtags.join(" "),
+          content.product.affiliateUrl,
+        ]
+          .filter(Boolean)
+          .join("\n\n")}
+        jobs={(await listPublishJobs(user.id, content.id)).map((job) => ({
+          ...job,
+          publishedAt: job.publishedAt ? displayDate(job.publishedAt) : null,
+          createdAt: displayDate(job.createdAt),
+        }))}
       />
       <ImageAssets
         contentId={content.id}
