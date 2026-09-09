@@ -1,6 +1,6 @@
 # AI Affiliate Content System
 
-เว็บแอปส่วนตัวสำหรับจัดการ Affiliate Content — เสร็จถึง **Phase 11: Facebook Publishing & Scheduling** ตาม `ai-affiliate-content-system-plan.md`
+เว็บแอปส่วนตัวสำหรับจัดการ Affiliate Content — เสร็จถึง **Phase 12: Content Calendar** ตาม `ai-affiliate-content-system-plan.md`
 
 ## สิ่งที่ใช้งานได้
 
@@ -23,6 +23,7 @@
 - เชื่อม Facebook Page ผ่าน OAuth โดยเข้ารหัส token ในฐานข้อมูล
 - เผยแพร่ Facebook text post, เก็บผลลัพธ์และ error history
 - ตั้งเวลา, เปลี่ยนเวลา และยกเลิก Facebook text post ได้
+- Calendar รายเดือนสำหรับดู Content ที่ตั้งเวลาโพสต์ไว้
 
 ## เปิดใช้ในเครื่องนี้
 

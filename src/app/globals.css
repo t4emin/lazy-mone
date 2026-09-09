@@ -435,6 +435,60 @@ figcaption {
 .success {
   color: #236144;
 }
+.calendar-panel {
+  overflow-x: auto;
+}
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(130px, 1fr));
+  min-width: 910px;
+  border-top: 1px solid #dbe2e8;
+  border-left: 1px solid #dbe2e8;
+}
+.calendar-weekday,
+.calendar-day {
+  border-right: 1px solid #dbe2e8;
+  border-bottom: 1px solid #dbe2e8;
+}
+.calendar-weekday {
+  padding: 10px 12px;
+  background: #edf2f6;
+  font-size: 13px;
+  font-weight: 700;
+}
+.calendar-day {
+  min-height: 145px;
+  padding: 9px;
+  background: white;
+}
+.calendar-empty {
+  background: #fafbfd;
+}
+.calendar-day-number {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.calendar-event {
+  display: grid;
+  gap: 3px;
+  margin: 6px 0;
+  padding: 7px;
+  border-radius: 5px;
+  background: #e5f0f7;
+  color: #193d58;
+  font-size: 12px;
+}
+.calendar-event time {
+  font-weight: 700;
+}
+.calendar-event small,
+.calendar-event span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 @media (max-width: 760px) {
   .form-grid {
     grid-template-columns: 1fr;
