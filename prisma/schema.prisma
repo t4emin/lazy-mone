@@ -17,6 +17,26 @@ model User {
   contents  ContentDraft[]
   videoJobs VideoJob[]
   socialAccounts SocialAccount[]
+  publishJobs PublishJob[]
+}
+
+model PublishJob {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contentId String
+  content ContentDraft @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  socialAccountId String
+  platform String
+  caption String
+  status String @default("pending")
+  externalPostId String?
+  errorMessage String?
+  publishedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([userId, createdAt])
+  @@index([contentId, status])
 }
 
 model SocialAccount {
@@ -94,6 +114,7 @@ model ContentDraft {
   updatedAt              DateTime @updatedAt
   assets                 ProductAsset[]
   videoJobs              VideoJob[]
+  publishJobs            PublishJob[]
 
   @@index([userId, createdAt])
   @@index([productId])
