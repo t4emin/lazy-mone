@@ -34,10 +34,14 @@ export async function POST(request: NextRequest) {
       maxAge: SESSION_DURATION_SECONDS,
     });
     return response;
-  } catch {
-    console.error(
-      "Login failed: check server configuration and database availability.",
-    );
+  } catch (error) {
+    console.error("Login unavailable", {
+      name: error instanceof Error ? error.name : "UnknownError",
+      message:
+        error instanceof Error
+          ? error.message
+          : "Check server configuration and database availability.",
+    });
     return NextResponse.redirect(
       new URL("/login?error=unavailable", getEnv().APP_ORIGIN),
       303,
