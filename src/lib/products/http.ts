@@ -30,10 +30,10 @@ export async function productRequest(
         },
         { status: 400 },
       );
-    console.error(
-      "Product operation failed:",
-      error instanceof Error ? error.name : "UnknownError",
-    );
+    console.error("Product operation failed", {
+      name: error instanceof Error ? error.name : "UnknownError",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
     return NextResponse.json(
       { error: "ระบบไม่พร้อมใช้งานชั่วคราว กรุณาลองอีกครั้ง" },
       { status: 500 },
