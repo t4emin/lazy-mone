@@ -20,6 +20,7 @@ model User {
   publishJobs PublishJob[]
   aiUsages AIUsage[]
   aiBudget AIBudget?
+  analyticsSnapshots AnalyticsSnapshot[]
 }
 
 model AIBudget {
@@ -117,6 +118,7 @@ model Product {
   updatedAt    DateTime        @updatedAt
   assets       ProductAsset[]
   contents     ContentDraft[]
+  analyticsSnapshots AnalyticsSnapshot[]
   videoJobs    VideoJob[]
 
   @@index([userId, createdAt])
@@ -148,9 +150,35 @@ model ContentDraft {
   assets                 ProductAsset[]
   videoJobs              VideoJob[]
   publishJobs            PublishJob[]
+  analyticsSnapshots     AnalyticsSnapshot[]
 
   @@index([userId, createdAt])
   @@index([productId])
+}
+
+model AnalyticsSnapshot {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  contentId String
+  content ContentDraft @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  platform String
+  collectedOn DateTime
+  views Int @default(0)
+  likes Int @default(0)
+  comments Int @default(0)
+  shares Int @default(0)
+  clicks Int @default(0)
+  orders Int @default(0)
+  commission Decimal @default(0) @db.Decimal(12, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([contentId, platform, collectedOn])
+  @@index([userId, collectedOn])
+  @@index([productId, platform])
 }
 
 model ProductAsset {
