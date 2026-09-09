@@ -17,7 +17,7 @@ export async function GET() {
     redirect_uri: redirectUri,
     state,
     response_type: "code",
-    scope: "pages_show_list,pages_read_engagement,pages_manage_posts",
+    scope: "pages_show_list",
   }).toString();
   const response = NextResponse.redirect(url);
   response.cookies.set("facebook_oauth_state", state, {
