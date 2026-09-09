@@ -35,9 +35,13 @@ export function listComposedVideos(userId: string, contentId: string) {
 
 function runFfmpeg(args: string[]) {
   return new Promise<void>((resolve, reject) => {
-    const child = spawn(process.env.FFMPEG_PATH || "ffmpeg", args, {
-      stdio: ["ignore", "ignore", "pipe"],
-    });
+    const child = spawn(
+      /* turbopackIgnore: true */ process.env.FFMPEG_PATH || "ffmpeg",
+      args,
+      {
+        stdio: ["ignore", "ignore", "pipe"],
+      },
+    );
     let errors = "";
     child.stderr.on("data", (chunk) => (errors += chunk));
     child.on("error", () =>
