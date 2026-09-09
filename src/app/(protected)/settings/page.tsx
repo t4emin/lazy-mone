@@ -1,6 +1,7 @@
 import { requireSession } from "@/lib/auth/session";
 import { listSocialAccounts } from "@/lib/social/service";
 import Link from "next/link";
+import { RemoveSocialAccount } from "@/components/social/remove-social-account";
 export default async function Settings() {
   const { user } = await requireSession();
   const accounts = await listSocialAccounts(user.id);
@@ -22,6 +23,7 @@ export default async function Settings() {
                   <th>Account</th>
                   <th>Status</th>
                   <th>Expires</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -31,6 +33,9 @@ export default async function Settings() {
                     <td>{a.accountName}</td>
                     <td>{a.status}</td>
                     <td>{a.expiresAt?.toLocaleString() ?? "—"}</td>
+                    <td>
+                      <RemoveSocialAccount id={a.id} name={a.accountName} />
+                    </td>
                   </tr>
                 ))}
               </tbody>

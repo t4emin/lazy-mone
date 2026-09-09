@@ -42,3 +42,20 @@ export function saveFacebookPage(
     },
   });
 }
+
+export async function removeSocialAccount(userId: string, accountId: string) {
+  const db = getDb();
+  const account = await db.socialAccount.findFirst({
+    where: { id: accountId, userId },
+    select: { id: true },
+  });
+  if (!account) return false;
+  await db.$transaction([
+    db.publishJob.updateMany({
+      where: { socialAccountId: account.id, status: "scheduled" },
+      data: { status: "cancelled", cancelledAt: new Date() },
+    }),
+    db.socialAccount.delete({ where: { id: account.id } }),
+  ]);
+  return true;
+}
