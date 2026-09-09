@@ -435,6 +435,12 @@ figcaption {
 .success {
   color: #236144;
 }
+.warning {
+  color: #8a5b00;
+  background: #fff7d6;
+  padding: 10px 12px;
+  border-radius: 6px;
+}
 .calendar-panel {
   overflow-x: auto;
 }

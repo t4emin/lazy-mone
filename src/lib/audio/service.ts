@@ -6,6 +6,7 @@ import { ProductError } from "@/lib/products/errors";
 import { getAssetStorage, removeStoredFiles } from "@/lib/storage/storage";
 import type { GenerateAudioInput } from "./validation";
 import { recordAIUsage } from "@/lib/usage/service";
+import { assertBudgetAvailable } from "@/lib/budget/service";
 
 const activeUsers = new Set<string>();
 
@@ -28,6 +29,7 @@ export async function generateContentAudio(
   if (!content) throw new ProductError(404, "ไม่พบคอนเทนต์");
   if (activeUsers.has(userId))
     throw new ProductError(409, "กำลังสร้างเสียงอยู่ กรุณารอให้เสร็จก่อน");
+  await assertBudgetAvailable(userId);
   activeUsers.add(userId);
   try {
     const generated = await (provider ?? getAudioProvider()).generateAudio(

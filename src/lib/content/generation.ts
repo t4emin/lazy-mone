@@ -3,6 +3,7 @@ import { getDb } from "@/lib/db";
 import { getTextProvider } from "@/lib/ai/ai-service";
 import type { AITextProvider } from "@/lib/ai/text-provider";
 import { ProductError } from "@/lib/products/errors";
+import { assertBudgetAvailable } from "@/lib/budget/service";
 import { contentTextSchema, type GenerationOptions } from "./validation";
 
 // Bound simultaneous paid requests per user in this single-process MVP.
@@ -21,6 +22,7 @@ export async function generateDraft(
   if (activeUsers.has(userId))
     throw new ProductError(409, "กำลังสร้างคอนเทนต์อยู่ กรุณารอให้เสร็จก่อน");
   const adapter = provider ?? getTextProvider();
+  await assertBudgetAvailable(userId);
   activeUsers.add(userId);
   try {
     const generated = await adapter.generateContent({

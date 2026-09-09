@@ -6,6 +6,7 @@ import { ProductError } from "@/lib/products/errors";
 import type { AIVideoProvider } from "./provider";
 import type { CreateVideoJobInput } from "./validation";
 import { recordAIUsage } from "@/lib/usage/service";
+import { assertBudgetAvailable } from "@/lib/budget/service";
 
 export function listVideoJobs(userId: string, contentId: string) {
   return getDb().videoJob.findMany({
@@ -30,6 +31,7 @@ export async function createVideoJob(
     where: { id: contentId, userId, product: { userId } },
   });
   if (!content) throw new ProductError(404, "ไม่พบคอนเทนต์");
+  await assertBudgetAvailable(userId);
   const reference = input.referenceAssetId
     ? await getDb().productAsset.findFirst({
         where: { id: input.referenceAssetId, productId: content.productId },

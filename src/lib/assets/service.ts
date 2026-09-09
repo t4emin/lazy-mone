@@ -4,6 +4,7 @@ import { getAssetStorage, removeStoredFiles } from "@/lib/storage/storage";
 import { getImageProvider } from "@/lib/ai/ai-service";
 import type { AIImageProvider } from "@/lib/ai/image-provider";
 import { ProductError } from "@/lib/products/errors";
+import { assertBudgetAvailable } from "@/lib/budget/service";
 import type { ImageGenerationInput } from "./validation";
 
 const activeUsers = new Set<string>();
@@ -56,6 +57,7 @@ export async function generateContentImage(
       400,
       "รูปอ้างอิงต้องเป็นรูปสินค้าหรือภาพ AI ของสินค้าเดียวกัน",
     );
+  await assertBudgetAvailable(userId);
   activeUsers.add(userId);
   try {
     const generated = await (provider ?? getImageProvider()).generateImage({
