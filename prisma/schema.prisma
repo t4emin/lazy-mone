@@ -18,6 +18,24 @@ model User {
   videoJobs VideoJob[]
   socialAccounts SocialAccount[]
   publishJobs PublishJob[]
+  aiUsages AIUsage[]
+}
+
+model AIUsage {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type String
+  provider String
+  model String
+  inputUsage String?
+  outputUsage String?
+  estimatedCost Decimal? @db.Decimal(14, 4)
+  costUnit String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([userId, type])
 }
 
 model PublishJob {

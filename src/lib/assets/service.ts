@@ -85,7 +85,7 @@ export async function generateContentImage(
             409,
             "คอนเทนต์ถูกลบระหว่างสร้างภาพ จึงบันทึกไม่ได้",
           );
-        return tx.productAsset.create({
+        const asset = await tx.productAsset.create({
           data: {
             productId: content.productId,
             contentId,
@@ -100,6 +100,17 @@ export async function generateContentImage(
             aiModel: generated.model,
           },
         });
+        await tx.aIUsage.create({
+          data: {
+            userId,
+            type: "image",
+            provider: generated.provider,
+            model: generated.model,
+            inputUsage: `${input.prompt.length} prompt characters`,
+            outputUsage: `${generated.data.length} bytes`,
+          },
+        });
+        return asset;
       });
     } catch (error) {
       await removeStoredFiles([filePath]);

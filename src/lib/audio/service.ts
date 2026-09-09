@@ -5,6 +5,7 @@ import type { AIAudioProvider } from "@/lib/ai/audio-provider";
 import { ProductError } from "@/lib/products/errors";
 import { getAssetStorage, removeStoredFiles } from "@/lib/storage/storage";
 import type { GenerateAudioInput } from "./validation";
+import { recordAIUsage } from "@/lib/usage/service";
 
 const activeUsers = new Set<string>();
 
@@ -34,7 +35,7 @@ export async function generateContentAudio(
     );
     const filePath = await getAssetStorage().put(generated.data, "mp3");
     try {
-      return await getDb().productAsset.create({
+      const asset = await getDb().productAsset.create({
         data: {
           productId: content.productId,
           contentId,
@@ -51,6 +52,15 @@ export async function generateContentAudio(
           speed: input.speed,
         },
       });
+      await recordAIUsage({
+        userId,
+        type: "voice",
+        provider: generated.provider,
+        model: generated.model,
+        inputUsage: `${input.text.length} characters`,
+        outputUsage: `${generated.data.length} bytes`,
+      });
+      return asset;
     } catch (error) {
       await getAssetStorage().remove(filePath);
       throw error;

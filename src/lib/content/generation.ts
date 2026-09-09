@@ -45,7 +45,7 @@ export async function generateDraft(
           409,
           "สินค้าถูกลบหรือเปลี่ยนเจ้าของระหว่างสร้างคอนเทนต์ จึงบันทึกไม่ได้",
         );
-      return tx.contentDraft.create({
+      const draft = await tx.contentDraft.create({
         data: {
           userId,
           productId,
@@ -55,6 +55,17 @@ export async function generateDraft(
           aiModel: generated.model,
         },
       });
+      await tx.aIUsage.create({
+        data: {
+          userId,
+          type: "text",
+          provider: generated.provider,
+          model: generated.model,
+          inputUsage: `${JSON.stringify(options).length} characters`,
+          outputUsage: `${JSON.stringify(text).length} characters`,
+        },
+      });
+      return draft;
     });
   } finally {
     activeUsers.delete(userId);

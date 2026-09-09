@@ -17,6 +17,7 @@ export default async function AppLayout({
           <Link href="/products">Products</Link>
           <Link href="/content">Content</Link>
           <Link href="/calendar">Calendar</Link>
+          <Link href="/usage">AI Usage</Link>
           <Link href="/settings">Settings</Link>
         </nav>
         <form action="/api/auth/logout" method="post">

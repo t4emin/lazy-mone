@@ -5,6 +5,7 @@ import { getAssetStorage } from "@/lib/storage/storage";
 import { ProductError } from "@/lib/products/errors";
 import type { AIVideoProvider } from "./provider";
 import type { CreateVideoJobInput } from "./validation";
+import { recordAIUsage } from "@/lib/usage/service";
 
 export function listVideoJobs(userId: string, contentId: string) {
   return getDb().videoJob.findMany({
@@ -63,7 +64,7 @@ export async function createVideoJob(
           }
         : undefined,
     });
-    return await getDb().videoJob.update({
+    const saved = await getDb().videoJob.update({
       where: { id: job.id },
       data: {
         providerJobId: update.providerJobId,
@@ -73,6 +74,21 @@ export async function createVideoJob(
         errorMessage: update.errorMessage ?? null,
       },
     });
+    await recordAIUsage({
+      userId,
+      type: "video",
+      provider: saved.provider,
+      model: saved.model,
+      inputUsage: `${input.prompt.length} prompt characters`,
+      outputUsage: `${input.durationSeconds} seconds`,
+      ...(saved.estimatedCost !== null
+        ? {
+            estimatedCost: Number(saved.estimatedCost.toString()),
+            costUnit: "credits",
+          }
+        : {}),
+    });
+    return saved;
   } catch (error) {
     await getDb().videoJob.update({
       where: { id: job.id },

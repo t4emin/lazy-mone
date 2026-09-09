@@ -2,10 +2,12 @@ import { requireSession } from "@/lib/auth/session";
 import { countProducts } from "@/lib/products/service";
 import { countDrafts } from "@/lib/content/service";
 import Link from "next/link";
+import { getAIUsageSummary } from "@/lib/usage/service";
 export default async function Dashboard() {
   const { user } = await requireSession();
   const productCount = await countProducts(user.id);
   const draftCount = await countDrafts(user.id);
+  const usage = await getAIUsageSummary(user.id);
   return (
     <>
       <p className="eyebrow">WORKSPACE</p>
@@ -30,6 +32,26 @@ export default async function Dashboard() {
           </section>
         ))}
       </div>
+      <section className="panel">
+        <h2>AI Usage</h2>
+        <div className="stats">
+          {[
+            ["Text AI", usage.text],
+            ["Image AI", usage.image],
+            ["Video AI", usage.video],
+            ["Voice AI", usage.voice],
+            ["Known Provider Credits", usage.knownCost],
+          ].map(([label, value]) => (
+            <section className="stat" key={String(label)}>
+              <h2>{label}</h2>
+              <p>{value}</p>
+            </section>
+          ))}
+        </div>
+        <p>
+          <Link href="/usage">ดูประวัติ AI usage</Link>
+        </p>
+      </section>
       <section className="panel">
         <h2>พื้นที่ทำงานพร้อมแล้ว</h2>
         <p className="muted">
