@@ -1,6 +1,6 @@
 # AI Affiliate Content System
 
-เว็บแอปส่วนตัวสำหรับจัดการ Affiliate Content — เสร็จถึง **Phase 13: AI Usage & Cost Tracking** ตาม `ai-affiliate-content-system-plan.md`
+เว็บแอปส่วนตัวสำหรับจัดการ Affiliate Content — เสร็จถึง **Phase 16: Affiliate Intelligence** ตาม `ai-affiliate-content-system-plan.md`
 
 ## สิ่งที่ใช้งานได้
 
@@ -25,6 +25,7 @@
 - ตั้งเวลา, เปลี่ยนเวลา และยกเลิก Facebook text post ได้
 - Calendar รายเดือนสำหรับดู Content ที่ตั้งเวลาโพสต์ไว้
 - AI Usage history สำหรับ text, image, video และ voice ที่สร้างสำเร็จ
+- Performance Insights วิเคราะห์ Analytics ในระบบเพื่อแนะนำสินค้าและคอนเทนต์ที่ควรทำต่อ
 
 ## เปิดใช้ในเครื่องนี้
 
