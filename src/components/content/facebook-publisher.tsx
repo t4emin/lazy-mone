@@ -7,12 +7,12 @@ import { errorMessage, productFetch } from "@/lib/products/client";
 type Account = { id: string; accountName: string };
 type Job = {
   id: string;
-  caption: string;
   status: string;
   externalPostId: string | null;
   errorMessage: string | null;
+  scheduledAt: string | null;
+  cancelledAt: string | null;
   publishedAt: string | null;
-  createdAt: string;
 };
 
 export function FacebookPublisher({
@@ -31,25 +31,67 @@ export function FacebookPublisher({
   const router = useRouter();
   const [caption, setCaption] = useState(initialCaption);
   const [accountId, setAccountId] = useState(accounts[0]?.id ?? "");
+  const [scheduledAt, setScheduledAt] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const unavailable = !ready || !accountId || !caption.trim() || submitting;
 
-  async function publish() {
+  async function request(url: string, options: RequestInit, success: string) {
     setSubmitting(true);
     setMessage(null);
     try {
-      await productFetch(`/api/content/${contentId}/publish/facebook`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ socialAccountId: accountId, caption }),
-      });
-      setMessage("เผยแพร่ไป Facebook แล้ว");
+      await productFetch(url, options);
+      setMessage(success);
       router.refresh();
     } catch (error) {
       setMessage(errorMessage(error));
     } finally {
       setSubmitting(false);
     }
+  }
+
+  function publish() {
+    return request(
+      `/api/content/${contentId}/publish/facebook`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ socialAccountId: accountId, caption }),
+      },
+      "เผยแพร่ไป Facebook แล้ว",
+    );
+  }
+
+  function schedule() {
+    return request(
+      `/api/content/${contentId}/schedule/facebook`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          socialAccountId: accountId,
+          caption,
+          scheduledAt: new Date(scheduledAt).toISOString(),
+        }),
+      },
+      "ตั้งเวลาเผยแพร่แล้ว",
+    );
+  }
+
+  function updateSchedule(jobId: string, cancel = false) {
+    return request(
+      `/api/content/${contentId}/schedule/facebook/${jobId}`,
+      cancel
+        ? { method: "DELETE" }
+        : {
+            method: "PATCH",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              scheduledAt: new Date(scheduledAt).toISOString(),
+            }),
+          },
+      cancel ? "ยกเลิกกำหนดเวลาแล้ว" : "เปลี่ยนเวลาเผยแพร่แล้ว",
+    );
   }
 
   return (
@@ -88,19 +130,33 @@ export function FacebookPublisher({
         />
       </label>
       <p>
-        <button
-          type="button"
-          onClick={publish}
-          disabled={!ready || !accountId || !caption.trim() || submitting}
-        >
+        <button type="button" onClick={publish} disabled={unavailable}>
           {submitting ? "กำลังเผยแพร่…" : "Publish to Facebook"}
         </button>
       </p>
+      <label>
+        Publish date and time (เวลาไทย)
+        <input
+          type="datetime-local"
+          value={scheduledAt}
+          onChange={(event) => setScheduledAt(event.target.value)}
+        />
+      </label>
+      <p>
+        <button
+          type="button"
+          onClick={schedule}
+          disabled={unavailable || !scheduledAt}
+        >
+          Schedule Facebook Post
+        </button>
+      </p>
+      <p className="muted">
+        ตั้งเวลาใหม่ในช่องด้านบน แล้วกด Reschedule ที่รายการ scheduled ได้
+      </p>
       {message && (
         <p
-          className={
-            message === "เผยแพร่ไป Facebook แล้ว" ? "success" : "error"
-          }
+          className={message.includes("แล้ว") ? "success" : "error"}
           role="status"
         >
           {message}
@@ -112,18 +168,45 @@ export function FacebookPublisher({
             <thead>
               <tr>
                 <th>Status</th>
-                <th>Published</th>
+                <th>Scheduled / Published</th>
                 <th>Facebook post</th>
                 <th>Details</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {jobs.map((job) => (
                 <tr key={job.id}>
                   <td>{job.status}</td>
-                  <td>{job.publishedAt ?? "—"}</td>
+                  <td>
+                    {job.scheduledAt ??
+                      job.publishedAt ??
+                      job.cancelledAt ??
+                      "—"}
+                  </td>
                   <td>{job.externalPostId ?? "—"}</td>
                   <td>{job.errorMessage ?? "—"}</td>
+                  <td>
+                    {job.status === "scheduled" && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => updateSchedule(job.id)}
+                          disabled={!scheduledAt || submitting}
+                        >
+                          Reschedule
+                        </button>{" "}
+                        <button
+                          type="button"
+                          className="danger"
+                          onClick={() => updateSchedule(job.id, true)}
+                          disabled={submitting}
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

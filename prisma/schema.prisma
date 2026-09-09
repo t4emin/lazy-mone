@@ -32,11 +32,14 @@ model PublishJob {
   status String @default("pending")
   externalPostId String?
   errorMessage String?
+  scheduledAt DateTime?
+  cancelledAt DateTime?
   publishedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@index([userId, createdAt])
   @@index([contentId, status])
+  @@index([status, scheduledAt])
 }
 
 model SocialAccount {

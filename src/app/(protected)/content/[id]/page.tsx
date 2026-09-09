@@ -143,6 +143,8 @@ export default async function ContentDetail({
           .join("\n\n")}
         jobs={(await listPublishJobs(user.id, content.id)).map((job) => ({
           ...job,
+          scheduledAt: job.scheduledAt ? displayDate(job.scheduledAt) : null,
+          cancelledAt: job.cancelledAt ? displayDate(job.cancelledAt) : null,
           publishedAt: job.publishedAt ? displayDate(job.publishedAt) : null,
           createdAt: displayDate(job.createdAt),
         }))}

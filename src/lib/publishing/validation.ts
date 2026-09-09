@@ -8,3 +8,13 @@ export const publishFacebookSchema = z
   .strict();
 
 export type PublishFacebookInput = z.infer<typeof publishFacebookSchema>;
+
+export const scheduleFacebookSchema = publishFacebookSchema.extend({
+  scheduledAt: z.string().datetime({ offset: true }),
+});
+
+export const rescheduleFacebookSchema = z
+  .object({ scheduledAt: z.string().datetime({ offset: true }) })
+  .strict();
+
+export type ScheduleFacebookInput = z.infer<typeof scheduleFacebookSchema>;

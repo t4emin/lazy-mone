@@ -1,6 +1,6 @@
 # AI Affiliate Content System
 
-เว็บแอปส่วนตัวสำหรับจัดการ Affiliate Content — เสร็จถึง **Phase 6: Voice Generation** ตาม `ai-affiliate-content-system-plan.md` (8 กันยายน 2026)
+เว็บแอปส่วนตัวสำหรับจัดการ Affiliate Content — เสร็จถึง **Phase 11: Facebook Publishing & Scheduling** ตาม `ai-affiliate-content-system-plan.md`
 
 ## สิ่งที่ใช้งานได้
 
@@ -20,7 +20,9 @@
 - หน้ารวม Content แสดงสินค้า สถานะ Provider และ Model พร้อมเปิดกลับมาแก้ไข
 - AI Video: สร้าง Video Job ผ่าน Runway, ติดตามสถานะจริง, เปิดผลลัพธ์ MP4 และ retry งานที่ล้มเหลว
 - AI Voice Over: สร้าง MP3 จาก Script ผ่าน OpenAI TTS เลือก Voice, Language และ Speed ได้ พร้อมฟังและลบ Audio Asset
-- Settings และ Social Publishing ยังเป็น Placeholder
+- เชื่อม Facebook Page ผ่าน OAuth โดยเข้ารหัส token ในฐานข้อมูล
+- เผยแพร่ Facebook text post, เก็บผลลัพธ์และ error history
+- ตั้งเวลา, เปลี่ยนเวลา และยกเลิก Facebook text post ได้
 
 ## เปิดใช้ในเครื่องนี้
 
