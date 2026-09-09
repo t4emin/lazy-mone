@@ -226,4 +226,4 @@ Prisma tooling ใช้ overrides ของ `deepmerge-ts` และ `mysql2` �
 
 AI reference: [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs), [GPT-5.4 Mini](https://developers.openai.com/api/docs/models/gpt-5.4-mini), [OpenAI Audio API](https://platform.openai.com/docs/api-reference/audio/voice-consent-list)
 
-ดูผลตรวจตามรายการใน [PHASE-1-ACCEPTANCE.md](PHASE-1-ACCEPTANCE.md), [PHASE-2-ACCEPTANCE.md](PHASE-2-ACCEPTANCE.md), [PHASE-3-ACCEPTANCE.md](PHASE-3-ACCEPTANCE.md), [PHASE-4-ACCEPTANCE.md](PHASE-4-ACCEPTANCE.md) และ [PHASE-6-ACCEPTANCE.md](PHASE-6-ACCEPTANCE.md)
+ดูผลตรวจตามรายการใน `PHASE-*-ACCEPTANCE.md` และสถานะงานที่ยังดำเนินการใน `PHASE-*-STATUS.md`
